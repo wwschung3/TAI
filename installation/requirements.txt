@@ -3,10 +3,13 @@ crewai==0.100.1
 crewai-tools==0.17.0
 
 # LLM Adapters & Connectivity
+langchain-ollama==0.2.2
 langchain-community==0.3.13
 langchain-openai==0.2.14
-litellm==1.56.2
+litellm==1.59.8
 
 # Utilities for Mac/Python 3.12 stability
 pydantic==2.10.4
 python-dotenv==1.0.1
+gitpython==3.1.38 
+PyGithub==1.59.1

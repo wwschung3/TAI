@@ -1,10 +1,17 @@
 ## Overview;
 This is an attempt of using CrewAI to cooridinate multiple local AI models for a complex task (migrating an multi-years-old quickfixj project to fit the latest update).
 
+## Installation:
+```
+python3.12 -m venv venv
+source venv/bin/activate
+python3.12 -m pip install -r installation/requirements.txt
+```
+
 ## To Run:
 ```
 source .venv/bin/activate
-python fix_migration_crew.py {project_directory_path}
+python3.12 fix_migration_crew.py {project_directory_path}
 ```
 
 ## Project Status:
