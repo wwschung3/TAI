@@ -177,10 +177,16 @@ fetch_task = Task(
 
 review_task = Task(
     description=(
-        f"Read the provided code diffs carefully.\n"
-        f"If the provide content does not contain a normal code diff, report and abort tha task immidiately."
+        "Review the provided PR diff and write a report in Traditional Chinese (繁體中文). "
+        "The report MUST include these four sections:\n"
+        "1. **簡潔摘要 (Concise Summary)**: What does this PR change?\n"
+        "2. **安全性問題 (Security Issues)**: Identify vulnerabilities (SQLi, XSS, CSRF, etc.) or state 'None found'.\n"
+        "3. **重構建議 (Refactoring Suggestions)**: Improvements for readability, PHP 8 standards, or Magento 2 patterns.\n"
+        "4. **缺失文件 (Missing Documentation)**: List new classes/methods missing DocBlocks or README updates.\n\n"
+        "If the diff is very long, focus on the logic-heavy files (PHP, JS) first."
+        "If the provide content does not contain a normal code diff, report and abort tha task immidiately."
     ),
-    expected_output="A structured markdown report reviewing the code in the PR.",
+    expected_output="A structured Markdown report in Traditional Chinese with the 4 required sections.",
     agent=code_reviewer,
 )
 
