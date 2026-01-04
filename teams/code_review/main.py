@@ -34,7 +34,7 @@ PR_NUMBER   = input("Enter PR_NUMBER (e.g. 1234): ").strip()
 print("Building LLM...")
 
 local_gpt_oss = LLM(
-    model="ollama/gpt-oss:20b",
+    model="ollama/nemotron-3-nano:30b",
     base_url="http://localhost:11434",
     temperature=0.1,
     timeout=1200,
@@ -58,32 +58,32 @@ local_qwen_coder = LLM(
 
 print("Init custom tool...")
 
-from crewai_tools import SerperDevTool, GithubSearchTool
+# from crewai_tools import SerperDevTool, GithubSearchTool
 
-search_tool      = SerperDevTool()
-github_search_tool = GithubSearchTool(
-    github_repo=os.getenv("GITHUB_REPO_URL"),
-    gh_token=os.getenv("GITHUB_TOKEN"),
-    content_types=["code", "pr"],
-    open_api_key="",
-    config=dict(
-        llm=dict(
-            provider="ollama",
-            config=dict(
-                model="nemotron-3-nano:30b",
-                base_url="http://localhost:11434",
-                temperature=0.1,
-            )
-        ),
-        embedder=dict(
-            provider="ollama",
-            config=dict(
-                model="nomic-embed-text",
-                base_url="http://localhost:11434",
-            ),
-        ),
-    )
-)
+# search_tool      = SerperDevTool()
+# github_search_tool = GithubSearchTool(
+#     github_repo=os.getenv("GITHUB_REPO_URL"),
+#     gh_token=os.getenv("GITHUB_TOKEN"),
+#     content_types=["code", "pr"],
+#     open_api_key="",
+#     config=dict(
+#         llm=dict(
+#             provider="ollama",
+#             config=dict(
+#                 model="nemotron-3-nano:30b",
+#                 base_url="http://localhost:11434",
+#                 temperature=0.1,
+#             )
+#         ),
+#         embedder=dict(
+#             provider="ollama",
+#             config=dict(
+#                 model="nomic-embed-text",
+#                 base_url="http://localhost:11434",
+#             ),
+#         ),
+#     )
+# )
 
 # Custom Tool to get ACTUAL PR Content
 @tool("fetch_pr_content")

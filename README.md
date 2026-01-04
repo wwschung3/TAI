@@ -10,8 +10,8 @@ python3.12 -m pip install -r installation/requirements.txt
 
 ## To Run:
 ```
-source .venv/bin/activate
-python3.12 fix_migration_crew.py {project_directory_path}
+source venv/bin/activate
+python3.12 teams/<team>/main.py
 ```
 
 ## Project Status:
