@@ -1,4 +1,5 @@
 import os
+from pathlib import Path
 from crewai.tools import BaseTool
 
 class AdaptiveMarkdownWriter(BaseTool):
@@ -56,8 +57,25 @@ class AdaptiveMarkdownWriter(BaseTool):
             safe_name += ".md"
 
         try:
-            with open(safe_name, "w", encoding="utf-8") as f:
+            # Write into a dedicated output directory inside the project to
+            # avoid confusion about the current working directory. Use the
+            # parent of this tools folder as the team folder (e.g.
+            # teams/requirement_interview/output_specs).
+            base_dir = Path(__file__).resolve().parent.parent
+            out_dir = base_dir / "output_specs"
+            out_dir.mkdir(parents=True, exist_ok=True)
+
+            abs_path = str((out_dir / safe_name).resolve())
+            with open(abs_path, "w", encoding="utf-8") as f:
                 f.write(content or "")
-            return f"Successfully saved markdown to {safe_name}"
+                f.flush()
+                try:
+                    os.fsync(f.fileno())
+                except Exception:
+                    # fsync may not be available on some platforms; ignore errors
+                    pass
+
+            # Return absolute path so callers know where the file was written.
+            return f"Successfully saved markdown to {abs_path}"
         except Exception as e:
             return f"Error saving file: {str(e)}"

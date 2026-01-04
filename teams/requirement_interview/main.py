@@ -84,37 +84,18 @@ architect_agent = Agent(
     max_iter=15 # Increased to allow for multiple interview rounds
 )
 
-architect_agent = Agent(
-    role='Conversation Logger',
-    goal='Save the conversation log to a file.',
-    backstory=(
-        "You now analyze some text context input, create a fitting filename, and save the spec using the save_output_file_tool. "
-    ),
-    llm=reasoning_llm,
-    tools=[interview_tool, save_output_file_tool],
-    verbose=True,
-    allow_delegation=False,
-    max_iter=15 # Increased to allow for multiple interview rounds
-)
-
 # 3. Define the Task
 interview_task = Task(
     description=(
-        """
-Read the conversation below:
-
-RabbitMQ – Stores market‑data events in a durable queue.
-QFJ Consumer – Pulls messages, performs validation, and hands them to the FIX engine.
-FIX Engine (QuickFixJ) – Encodes the payload into FIX 4.4/5.0 messages and sends them over TCP to counterparties.
-DLQ – Captures malformed or rejected messages for later re‑processing.
-Metrics Exporter – Exposes Prometheus‑compatible endpoints (`/metrics`) for latency, throughput, error rates, and queue depth.
-
-End of conversation.
-
-You now analyze the conversation topic, create a fitting filename, and save the spec using the save_output_file_tool.
-"""
+        "Start the interview by asking about the project vision and core technical challenges. "
+        "Continue the dialogue using the tool until you have sufficient details. "
+        "Final Output must be: "
+        "1. a comprehensive Markdown Specification Document, and "
+        "2. a step-by-step plan with exact commands to build the project from scratch. "
+        "3. Determine a unique, descriptive filename based on the project topic. "
+        "4. Use the save_output_file_tool to save the final document physically."
     ),
-    expected_output="A markdown document saved to a file with custom name and a confirmation message.",
+    expected_output="A complete, professional Software Specification Document in Markdown format, along with a step by step plan provide exact command to build the project that is saved to a file with custom name and a confirmation message.",
     agent=architect_agent
 )
 
