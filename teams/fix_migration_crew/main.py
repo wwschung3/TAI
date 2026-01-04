@@ -18,8 +18,8 @@ os.environ["OPENAI_API_KEY"] = ""          # 不需要 OpenAI 金鑰
 # 把父目錄 (my_project) 加入 PYTHONPATH，讓 Python 能找到 tools/
 PROJECT_ROOT = Path(__file__).resolve().parent
 sys.path.append(str(PROJECT_ROOT))
-TOOLS_PATH = PROJECT_ROOT / "tools"
-sys.path.append(str(TOOLS_PATH))
+PROJECT_TOOLS_PATH = PROJECT_ROOT / "tools"
+sys.path.append(str(PROJECT_TOOLS_PATH))
 
 from generate_tree import get_structure
 
