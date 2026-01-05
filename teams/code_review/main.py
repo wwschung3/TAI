@@ -142,10 +142,11 @@ data_fetcher.tools[0].result_as_answer = True
 # )
 
 code_reviewer = Agent(
-    role="Senior Software Engineer",
+    role="Senior Code Reviewer",
     goal="Review the supplied PR diff and produce a markdown report in Traditional Chinese.",
     backstory=(
         "You are an expert in PHP 8 and Magento 2. "
+        "You review code changes for a git pull request (PR) for other developers. "
         "Provide a concise summary, list security issues, suggest refactorings, "
         "and identify missing documentation for new major classes or major functions."
     ),
@@ -189,7 +190,7 @@ review_task = Task(
         "If the diff is very long, focus on the logic-heavy files (PHP, JS) first."
         "If the provide content does not contain a normal code diff, report and abort tha task immidiately."
     ),
-    expected_output="A structured Markdown report in Traditional Chinese (繁體中文) with the 5 required sections.",
+    expected_output="A structured Code Review report in Markdown format in Traditional Chinese (繁體中文) with the 5 required sections.",
     agent=code_reviewer,
 )
 
