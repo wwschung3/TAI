@@ -33,7 +33,7 @@ PR_NUMBER   = input("Enter PR_NUMBER (e.g. 1234): ").strip()
 
 print("Building LLM...")
 
-local_gpt_oss = LLM(
+reasoning_llm = LLM(
     #model="ollama/nemotron-3-nano:30b",
     model="ollama/devstral-small-2:24b",
     base_url="http://localhost:11434",
@@ -146,11 +146,12 @@ code_reviewer = Agent(
     goal="Review the supplied PR diff and produce a markdown report in Traditional Chinese.",
     backstory=(
         "You are an expert in PHP 8 and Magento 2. "
-        "You review code changes for a git pull request (PR) for other developers. "
+        "You review code changes for a git pull request (PR) for other developers. You do not write code; you find faults in others' code."
         "Provide a concise summary, list security issues, suggest refactorings, "
         "and identify missing documentation for new major classes or major functions."
+        "除代碼內容入專有名詞外，你**必須且只能**使用『繁體中文』(Traditional Chinese)"
     ),
-    llm=local_gpt_oss,
+    llm=reasoning_llm,
     verbose=True,
     max_iter=5,             # Limit loops to prevent infinite thinking
 )
@@ -179,7 +180,9 @@ fetch_task = Task(
 
 review_task = Task(
     description=(
+        "You are now acting as the Senior Code Reviewer. "
         "Review the provided PR diff and write a report in Traditional Chinese (繁體中文). "
+        "DO NOT explain the feature as if you wrote it. Your job is to CRITIQUE it. "
         "The report MUST include these four sections:\n"
         "1. **簡潔摘要 (Concise Summary)**: What does this PR change?\n"
         "2. **安全性問題 (Security Issues)**: Identify vulnerabilities (SQLi, XSS, CSRF, etc.) or state 'None found'.\n"
