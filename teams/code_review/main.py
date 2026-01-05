@@ -185,6 +185,7 @@ review_task = Task(
         "3. **性能問題 (Performance Issues)**: Identify performance problems (N+1 queries, inefficient loops, heavy CPU/memeory/DB usage, etc.)'.\n"
         "4. **重構建議 (Refactoring Suggestions)**: Improvements for readability, PHP 8 standards, or Magento 2 patterns, poor naming of variables/functions/classes or missing exception handling.\n"
         "5. **缺失文件 (Missing Documentation)**: List new classes/methods missing DocBlocks or README updates.\n\n"
+        "If there are no suggestions for a section, explicitly state '無' (None) for that section.\n\n"
         "If the diff is very long, focus on the logic-heavy files (PHP, JS) first."
         "If the provide content does not contain a normal code diff, report and abort tha task immidiately."
     ),
