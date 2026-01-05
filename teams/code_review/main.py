@@ -192,7 +192,7 @@ review_task = Task(
         "If the diff is very long, focus on the logic-heavy files (PHP, JS) first."
         "If the provide content does not contain a normal code diff, report and abort tha task immidiately."
     ),
-    expected_output="A structured Code Review report in Markdown format in Traditional Chinese (繁體中文) with the 5 required sections.",
+    expected_output="A structured Code Review report in Markdown format in Traditional Chinese (繁體中文) with the 4 required sections.",
     agent=code_reviewer,
 )
 
