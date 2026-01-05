@@ -30,6 +30,9 @@ dist/
 build/
 *.egg-info/
 
+# output
+**/output_specs/
+
 # --- OS Specific ---
 .DS_Store
 Thumbs.db

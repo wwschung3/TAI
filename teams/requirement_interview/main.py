@@ -58,7 +58,7 @@ save_output_file_tool = AdaptiveMarkdownWriter()
 
 # Define the LLM(s)
 reasoning_llm = LLM(
-    model="ollama/nemotron-3-nano:30b",
+    model="ollama/devstral-small-2:24b",
     base_url="http://localhost:11434",
     temperature=0.1,
     config={
@@ -95,7 +95,7 @@ interview_task = Task(
         "3. Determine a unique, descriptive filename based on the project topic. "
         "4. Use the save_output_file_tool to save the final document physically."
     ),
-    expected_output="A complete, professional Software Specification Document in Markdown format, along with a step by step plan provide exact command to build the project that is saved to a file with custom name and a confirmation message.",
+    expected_output="A complete, professional Software Specification Document in Markdown format, along with a step by step plan provide exact command to build the project that is saved to a file with custom file name and a confirmation message of the absolute path.",
     agent=architect_agent
 )
 

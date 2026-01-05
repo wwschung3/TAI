@@ -34,7 +34,8 @@ PR_NUMBER   = input("Enter PR_NUMBER (e.g. 1234): ").strip()
 print("Building LLM...")
 
 local_gpt_oss = LLM(
-    model="ollama/nemotron-3-nano:30b",
+    #model="ollama/nemotron-3-nano:30b",
+    model="ollama/devstral-small-2:24b",
     base_url="http://localhost:11434",
     temperature=0.1,
     timeout=1200,
@@ -181,12 +182,13 @@ review_task = Task(
         "The report MUST include these four sections:\n"
         "1. **簡潔摘要 (Concise Summary)**: What does this PR change?\n"
         "2. **安全性問題 (Security Issues)**: Identify vulnerabilities (SQLi, XSS, CSRF, etc.) or state 'None found'.\n"
-        "3. **重構建議 (Refactoring Suggestions)**: Improvements for readability, PHP 8 standards, or Magento 2 patterns.\n"
-        "4. **缺失文件 (Missing Documentation)**: List new classes/methods missing DocBlocks or README updates.\n\n"
+        "3. **性能問題 (Performance Issues)**: Identify performance problems (N+1 queries, inefficient loops, heavy CPU/memeory/DB usage, etc.)'.\n"
+        "4. **重構建議 (Refactoring Suggestions)**: Improvements for readability, PHP 8 standards, or Magento 2 patterns, poor naming of variables/functions/classes or missing exception handling.\n"
+        "5. **缺失文件 (Missing Documentation)**: List new classes/methods missing DocBlocks or README updates.\n\n"
         "If the diff is very long, focus on the logic-heavy files (PHP, JS) first."
         "If the provide content does not contain a normal code diff, report and abort tha task immidiately."
     ),
-    expected_output="A structured Markdown report in Traditional Chinese with the 4 required sections.",
+    expected_output="A structured Markdown report in Traditional Chinese (繁體中文) with the 5 required sections.",
     agent=code_reviewer,
 )
 
