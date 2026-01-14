@@ -9,11 +9,16 @@ import os
 # --------------------------------------------------------------
 # 1️⃣ 載入核心套件
 # --------------------------------------------------------------
+import crewai
 from crewai import Agent, Task, Crew, LLM
 from github import Github, Auth
 from crewai.tools import tool
+from crewai.tasks.conditional_task import ConditionalTask
+from crewai.tasks.task_output import TaskOutput
 from dotenv import load_dotenv
 from langchain_ollama import ChatOllama
+
+
 
 # --------------------------------------------------------------
 # 2️⃣ 環境變數（可自行調整）
@@ -108,6 +113,11 @@ def fetch_pr_content(pr_number: str) -> str:
         return f"Error fetching PR content: {e}"
     return f"PR Title: {pr.title}\nDescription: {pr.body}\n\nChanges:\n" + "\n".join(diffs)
 
+def is_valid_code_review(output: TaskOutput) -> bool:
+    """Check if the code review output meets the required structure."""
+    content = output.raw
+    return "FAILED" in str(output.raw).upper();
+
 # --------------------------------------------------------------
 # 5️⃣ 定義 Agent
 # --------------------------------------------------------------
@@ -156,6 +166,21 @@ code_reviewer = Agent(
     max_iter=5,             # Limit loops to prevent infinite thinking
 )
 
+review_validator = Agent(
+    role="Code Review Validator",
+    goal="Validate the Markdown report produced by the code reviewer.",
+    backstory=(
+        "You are an expert in LLM quality assurance. Your job is to check compliance, not to write the report."
+        "If the review meets all requirements, output: '✅ PASSED'. "
+        "If the review is non‑compliant, output: "
+        "\"❌ FAILED: <reason>. 重新執行代碼審查。\" "
+        "Then delegate to the `retry_task` (if your LLM platform supports delegation)."
+    ),
+    llm=local_qwen_coder,
+    allow_delegation=False,
+    verbose=True,
+)
+
 # --------------------------------------------------------------
 # 6️⃣ 定義 Task
 # --------------------------------------------------------------
@@ -187,8 +212,8 @@ review_task = Task(
         "1. **安全性問題 (Security Issues)**: Identify vulnerabilities (SQLi, XSS, CSRF, etc.) or state 'None found'.\n"
         "2. **性能問題 (Performance Issues)**: Identify performance problems (N+1 queries, inefficient loops, heavy CPU/memeory/DB usage, etc.)'.\n"
         "3. **重構建議 (Refactoring Suggestions)**: Improvements for readability, PHP 8 standards, or Magento 2 patterns, poor naming of variables/functions/classes or missing exception handling.\n"
-        "4. **缺失文件 (Missing Documentation)**: List new classes/methods missing DocBlocks or README updates.\n\n"
-        "If there are no suggestions for a section, explicitly state '無' (None) for that section.\n\n"
+        "4. **缺失文件 (Missing Documentation)**: List new classes/methods missing DocBlocks or README updates.\n"
+        "If there are no suggestions for a section, explicitly state '無' (None) for that section.\n"
         "If the diff is very long, focus on the logic-heavy files (PHP, JS) first."
         "If the provide content does not contain a normal code diff, report and abort tha task immidiately."
     ),
@@ -196,13 +221,47 @@ review_task = Task(
     agent=code_reviewer,
 )
 
+validate_task = Task(
+    name="validate_task",
+    description=(
+        "Validate the output from the Code Reviewer. Ensure the context is following the below requirements:\n"
+        "The report should be in Traditional Chinese (繁體中文). \n"
+        "The report should be from a prespective of a code reviewer, not a developer."
+    ),
+    agent=review_validator,
+    context=[review_task],  # the validator sees the reviewer's output
+    expected_output="'PASSED' or 'FAILED' with reasons",
+)
+
+retry_task = ConditionalTask(
+    name="retry_review_task",
+    description=(
+        "Re‑run the code reviewer if the previous output failed validation."
+        "You are now acting as the Senior Code Reviewer. "
+        "Review the provided PR diff and write a report in Traditional Chinese (繁體中文). "
+        "DO NOT explain the feature as if you wrote it. Your job is to CRITIQUE it. "
+        "The report MUST include these sections:\n"
+        "1. **安全性問題 (Security Issues)**: Identify vulnerabilities (SQLi, XSS, CSRF, etc.) or state 'None found'.\n"
+        "2. **性能問題 (Performance Issues)**: Identify performance problems (N+1 queries, inefficient loops, heavy CPU/memeory/DB usage, etc.)'.\n"
+        "3. **重構建議 (Refactoring Suggestions)**: Improvements for readability, PHP 8 standards, or Magento 2 patterns, poor naming of variables/functions/classes or missing exception handling.\n"
+        "4. **缺失文件 (Missing Documentation)**: List new classes/methods missing DocBlocks or README updates.\n\n"
+        "If there are no suggestions for a section, explicitly state '無' (None) for that section.\n\n"
+        "If the diff is very long, focus on the logic-heavy files (PHP, JS) first."
+        "If the provide content does not contain a normal code diff, report and abort tha task immidiately."
+    ),
+    agent=code_reviewer,
+    context=[validate_task],  # 提供原始代碼和失敗原因
+    expected_output="A structured Code Review report in Markdown format in Traditional Chinese (繁體中文).",
+    condition=is_valid_code_review,
+)
+
 # --------------------------------------------------------------
 # 7️⃣ 建立 Crew
 # --------------------------------------------------------------
 
 crew = Crew(
-    agents=[data_fetcher, code_reviewer],
-    tasks=[fetch_task, review_task],
+    agents=[data_fetcher, code_reviewer, review_validator],
+    tasks=[fetch_task, review_task, validate_task, retry_task],
     process="sequential",
     verbose=True
 )

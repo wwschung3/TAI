@@ -1,12 +1,11 @@
 # Core Framework
-crewai==0.100.1
+crewai==0.102.0
 crewai-tools==0.17.0
 
 # LLM Adapters & Connectivity
 langchain-ollama==0.2.2
 langchain-community==0.3.13
 langchain-openai==0.2.14
-litellm==1.59.8
 
 # Utilities for Mac/Python 3.12 stability
 pydantic==2.10.4
